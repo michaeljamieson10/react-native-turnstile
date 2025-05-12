@@ -49,6 +49,7 @@ export interface TurnstileProps extends TurnstileCallbacks {
 	refreshExpired?: 'auto' | 'manual' | 'never';
 	appearance?: 'always' | 'execute' | 'interaction-only';
 	execution?: 'render' | 'execute';
+	url?: string;
 	id?: string;
 	resetRef?: TurnstileResetRef;
 	className?: string;
@@ -121,6 +122,7 @@ export default function ReactNativeTurnstile(props: TurnstileProps) {
 		appearance,
 		execution,
 		id,
+		url,
 		resetRef,
 		style,
 		webviewStyle,
@@ -157,9 +159,7 @@ export default function ReactNativeTurnstile(props: TurnstileProps) {
 	if (appearance) params.append('appearance', appearance);
 	if (execution) params.append('execution', execution);
 	if (id) params.append('id', id);
-
-	const url = `${PUBLIC_DOMAIN}/turnstile?${params.toString()}`;
-
+	const turnstileUrl = `${(url || PUBLIC_DOMAIN)}/turnstile?${params.toString()}`;
 	const dimensions = turnstileDimensions[size || 'normal'];
 
 	const computedStyles: StyleProp<ViewStyle> = StyleSheet.flatten([
@@ -173,7 +173,7 @@ export default function ReactNativeTurnstile(props: TurnstileProps) {
 			<View style={computedStyles}>
 				<WebView
 					ref={webviewRef}
-					source={{ uri: url }}
+					source={{ uri: turnstileUrl }}
 					onMessage={event => {
 						try {
 							const eventData = JSON.parse(event.nativeEvent.data) as ReactNativeTurnstleEvent;
